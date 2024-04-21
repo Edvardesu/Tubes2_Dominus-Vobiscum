@@ -10,8 +10,8 @@ func main() {
 	var sliceURL []string
 	scrapeUrl := "https://en.wikipedia.org/wiki/English_Wikipedia"
 	// Instantiate a new collector
-	c := colly.NewCollector()
-	// c := colly.NewCollector(colly.AllowedDomains("https://en.wikipedia.org/wiki/"))
+	// c := colly.NewCollector()
+	c := colly.NewCollector(colly.AllowedDomains("en.wikipedia.org/wiki"))
 
 	// Visit the website and print its title
 	c.OnHTML("p a[href]", func(e *colly.HTMLElement) {
