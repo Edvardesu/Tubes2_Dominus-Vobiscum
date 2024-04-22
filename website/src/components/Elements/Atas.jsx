@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { SearchBar } from "./SearchBar";
+import { SearchResultsList } from "./SearchResultsList";
 
 const CucakRowo = (props) => {
   // const [selectedImage, setSelectedImage] = useState(null);
@@ -10,7 +12,7 @@ const CucakRowo = (props) => {
   const [results, setResults] = useState([]);
   const [searchinfo, setSearchInfo] = useState({});
 
-  const [results, setResults] = useState([]);
+  const [hasils, setHasils] = useState([]);
 
   const handleSearch = async (e) => {
     e.preventDefault();
@@ -102,7 +104,14 @@ const CucakRowo = (props) => {
               >
                 Final Page
               </label>
-              
+              <div className="h-64 text-black">
+                <div className="search-bar-container text-black">
+                  <SearchBar setHasils={setHasils} />
+                  {hasils && hasils.length > 0 && (
+                    <SearchResultsList hasils={hasils} />
+                  )}
+                </div>
+              </div>
             </div>
           </div>
         </div>
