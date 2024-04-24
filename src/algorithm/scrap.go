@@ -14,25 +14,17 @@ func isIn(lis[] string, s string) bool {
 	return false
 }
 
-func makePath(m map[string]string, f string) []string {
-	path := []string{f}
+func makePath(m map[string]string, now string, des string) []string {
+	path := []string{now}
 	parent := ""
 	for parent != "start" {
-		parent = m[f]
+		parent = m[now]
 		path = append(path, parent)
-		f = parent
+		now = parent
 	}
 	slices.Reverse(path)
+	path = append(path, des)
 	return path[1:]
-}
-
-func checkHastag(l string) int {
-	for i := 0; i < len(l); i++ {
-		if l[i] == '#' {
-			return i
-		}
-	}
-	return -1
 }
 
 func cutLink(l string, i int) string {
@@ -45,7 +37,7 @@ func validasiLinkIDS(l *string, c *colly.Collector, slice *[]string) {
 		link := e.Attr("href")[6:]
 		if !strings.Contains(link, "File:") {
 			// cek apakah link mengandung #
-			n := checkHastag(link)
+			n := 1
 			if n != -1 {
 				link = cutLink(link,n)
 			}
