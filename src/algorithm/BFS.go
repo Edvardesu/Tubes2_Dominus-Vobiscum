@@ -89,11 +89,13 @@ func validasiLinkBFS(queue *[]Node, m map[string]string, x *sync.Mutex, wg *sync
 	c.Visit(domain + l)
 }
 
-func main() {
+func BFS(awal string, akhir string) ([][]string, int, int, int64) {
+// func main() {
 	total_link = 0
 	var wait sync.WaitGroup
 	var mut sync.Mutex
 	var unvisitedQueue []Node
+	var minPath int
 	
 	start.link = "Joko_Widodo" // nanti ini input start
 	start.depth = 0
@@ -139,4 +141,6 @@ func main() {
 		fmt.Println("No path found")
 	}
 	fmt.Printf("Execution time: %dm %.2fs\nLink visited: %d\n", exTime/60000, float64(exTime%60000)/1000, total_link)
+
+	return path, minPath, total_link, exTime 
 }
