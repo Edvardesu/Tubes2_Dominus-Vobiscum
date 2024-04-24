@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"time"
 	"strings"
 	"log"
 	"github.com/gocolly/colly/v2"
@@ -20,11 +19,12 @@ func isInNode(lis []Node, s string) bool {
 	return false
 }
 
-func validasiLinkBFS(queue *[]Node, m map[string]string, c *colly.Collector) {
+func validasiLinkBFS(queue *[]Node, m map[string]string) {
+	c := colly.NewCollector(colly.AllowedDomains("en.wikipedia.org"))
+
 	domain := "https://en.wikipedia.org/wiki/"
 	l := (*queue)[0].link
 	current := (*queue)[0].depth + 1
-	// pointer := &current
 	*queue = (*queue)[1:]
 	
 	c.OnError(func (e *colly.Response, err error) {
@@ -76,20 +76,14 @@ func main() {
 
 	visitedMap := map[string]string {start.link: "start"}
 
-	// Instantiate a new collector
-	c := colly.NewCollector(colly.AllowedDomains("en.wikipedia.org"))
-
 	// Visit the website and print its title
 	for len(unvisitedQueue) > 0 {
-		validasiLinkBFS(&unvisitedQueue, visitedMap, c)
+		validasiLinkBFS(&unvisitedQueue, visitedMap)
 		_, finalFound := visitedMap[final]
 		if finalFound {
 			listOfPaths = append(listOfPaths, makePath(visitedMap, final))
 			delete(visitedMap, final)
 		}
-		fmt.Println(unvisitedQueue)
-		fmt.Println(visitedMap)
-		time.Sleep(2 * time.Second)
 	}
 
 	fmt.Println(listOfPaths)
