@@ -2,7 +2,9 @@ package main
 
 import (
 	"fmt"
+	"os"
 	"strings"
+	"time"
 
 	"github.com/gocolly/colly/v2"
 )
@@ -29,23 +31,58 @@ func checkHastag(l string) int {
 func cutLink(l string, i int) string {
 	return l[:i]
 }
-func getValidLink(link string) string {
-	c := colly.NewCollector(colly.AllowedDomains("en.wikipedia.org"))
-	var result string = "test"
-	c.OnResponse(func(r *colly.Response) {
-		// result = r.Request.URL
-		fmt.Println("link visited :", r.Request.URL)
-	})
-	c.OnScraped(func(r *colly.Response) {
-		fmt.Println(r.Request.URL, " scraped!")
-	})
-	c.Visit("https://en.wikipedia.org/wiki/" + link)
+
+func addUnderScore(title string) string {
+	var result string
+	for i := 0; i < len(title); i++ {
+		if title[i] == ' ' {
+			result += "_"
+		} else {
+			result += string(title[i])
+		}
+	}
 	return result
 }
-func validasiLinkIDS(l *string, slice *[]string) {
-	c := colly.NewCollector(colly.AllowedDomains("en.wikipedia.org"))
 
+func getValidLink(link string) string {
+	c := colly.NewCollector(colly.AllowedDomains("en.wikipedia.org"))
+	var title string
+	c.OnHTML(".firstHeading", func(e *colly.HTMLElement) {
+		// Extract the title of the Wikipedia page
+		title = strings.ToLower(e.Text)
+		// title = addUnderScore(title)
+		title = strings.ReplaceAll(title, " ", "_")
+		if title == destination {
+
+		}
+	})
+	c.Visit("https://en.wikipedia.org/wiki/" + link)
+	return title
+}
+func validasiLinkIDS(l *string, slice *[]string, new_path_of_url []string) {
+	c := colly.NewCollector(colly.AllowedDomains("en.wikipedia.org"), colly.CacheDir("./Cache"))
+
+	// checking title
+	var title string
+	c.OnHTML(".firstHeading", func(e *colly.HTMLElement) {
+		// Extract the title of the Wikipedia page
+		// title = strings.ToLower(e.Text)
+		// title = addUnderScore(title)
+		title = strings.ReplaceAll(e.Text, " ", "_")
+		if title == destination {
+			new_path_of_url = append(new_path_of_url, title)
+			path_found = append(path_found, new_path_of_url)
+
+			end := time.Now()
+			fmt.Println("Path found : ", path_found[0])
+			fmt.Println("Number of links visited : ", total_link_visited)
+			fmt.Println("Path length : ", len(path_found[0]))
+			fmt.Println("Runtime : ", end.Sub(begin))
+			os.Exit(0)
+		}
+	})
 	// fmt.Println(*l)
+	// scraping
 	c.OnHTML("p a[href^='/wiki']", func(e *colly.HTMLElement) {
 		total_link_visited += 1
 		link := e.Attr("href")[6:]
@@ -58,7 +95,9 @@ func validasiLinkIDS(l *string, slice *[]string) {
 
 			// cek apakah link ada di array URL
 			if !isIn(*slice, link) {
-				// link = getValidLink(link)
+				// title := getValidLink(link)
+				// fmt.Println("Title:", title)
+
 				*slice = append(*slice, link)
 				// fmt.Println("Link found :", link)
 			}
@@ -68,25 +107,3 @@ func validasiLinkIDS(l *string, slice *[]string) {
 	// Start scraping
 	c.Visit(*l)
 }
-
-// func main() {
-// 	var sliceURL []string
-// 	scrapeUrl := "https://en.wikipedia.org/wiki/Frikadelle"
-// 	// Instantiate a new collector
-// 	c := colly.NewCollector(colly.AllowedDomains("en.wikipedia.org"))
-
-// 	c.OnRequest(func(e *colly.Request) {
-// 		fmt.Println("Mengunjungi ", e.URL)
-// 	})
-
-// 	c.OnError(func(e *colly.Response, err error) {
-// 		log.Println("Terjadi error: ", err)
-// 	})
-
-// 	// Visit the website and print its title
-// 	validasiLink(&scrapeUrl, c, &sliceURL)
-
-// 	for i := 0; i < len(sliceURL); i++ {
-// 		fmt.Println(sliceURL[i])
-// 	}
-// }
