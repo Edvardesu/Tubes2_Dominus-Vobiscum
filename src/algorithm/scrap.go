@@ -29,9 +29,25 @@ func checkHastag(l string) int {
 func cutLink(l string, i int) string {
 	return l[:i]
 }
+func getValidLink(link string) string {
+	c := colly.NewCollector(colly.AllowedDomains("en.wikipedia.org"))
+	var result string = "test"
+	c.OnResponse(func(r *colly.Response) {
+		// result = r.Request.URL
+		fmt.Println("link visited :", r.Request.URL)
+	})
+	c.OnScraped(func(r *colly.Response) {
+		fmt.Println(r.Request.URL, " scraped!")
+	})
+	c.Visit("https://en.wikipedia.org/wiki/" + link)
+	return result
+}
+func validasiLinkIDS(l *string, slice *[]string) {
+	c := colly.NewCollector(colly.AllowedDomains("en.wikipedia.org"))
 
-func validasiLinkIDS(l *string, c *colly.Collector, slice *[]string) {
+	// fmt.Println(*l)
 	c.OnHTML("p a[href^='/wiki']", func(e *colly.HTMLElement) {
+		total_link_visited += 1
 		link := e.Attr("href")[6:]
 		if !strings.Contains(link, "File:") {
 			// cek apakah link mengandung #
@@ -42,8 +58,9 @@ func validasiLinkIDS(l *string, c *colly.Collector, slice *[]string) {
 
 			// cek apakah link ada di array URL
 			if !isIn(*slice, link) {
+				// link = getValidLink(link)
 				*slice = append(*slice, link)
-				fmt.Println("Link found :", link)
+				// fmt.Println("Link found :", link)
 			}
 		}
 	})
