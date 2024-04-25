@@ -23,14 +23,15 @@ func main() {
 
 	// Create a new collector
 	c := colly.NewCollector(colly.AllowedDomains("en.wikipedia.org"), colly.CacheDir("./Cache"))
-	start = "Joko_Widodo"
-	destination = "Cadmium"
+	start = "nasi_padang"
+	destination = "Cooked_rice"
 
 	central(c, &wg)
 	fmt.Println("Program finished!")
 }
 
 func central(c *colly.Collector, wg *sync.WaitGroup) {
+	sem := make(chan struct{}, 10)
 	begin = time.Now()
 	var iterasi int = 0
 
@@ -47,7 +48,18 @@ func central(c *colly.Collector, wg *sync.WaitGroup) {
 
 		for {
 
-			if len(path_found) > 0 {
+			// if len(path_found) > 0 {
+			// 	end := time.Now()
+			// 	fmt.Println("Path found : ", path_found)
+			// 	fmt.Println("Number of links visited : ", total_link_visited)
+			// 	fmt.Println("Path length : ", len(path_found[0]))
+			// 	fmt.Println("Runtime : ", end.Sub(begin))
+			// 	break
+			// }
+
+			limit := time.Now()
+			duration := limit.Sub(begin)
+			if ((duration > 30*time.Second) && (len(path_found) > 0)) || (duration > 5*time.Minute) {
 				end := time.Now()
 				fmt.Println("Path found : ", path_found)
 				fmt.Println("Number of links visited : ", total_link_visited)
@@ -55,6 +67,7 @@ func central(c *colly.Collector, wg *sync.WaitGroup) {
 				fmt.Println("Runtime : ", end.Sub(begin))
 				break
 			}
+
 			if iterasi == 5 {
 				fmt.Println("Sengaja dibatesin 5, coba tanya Vanson")
 				break
@@ -67,14 +80,22 @@ func central(c *colly.Collector, wg *sync.WaitGroup) {
 			fmt.Println("Depth ", iterasi)
 
 			wg.Add(1)
-			dls(c, path_of_url, start, iterasi, wg)
+			sem <- struct{}{}
+			go func() {
+				// defer func() {
+				// 	<-sem
+				// }()
+				dls(c, path_of_url, start, iterasi, wg, sem)
+			}()
+			// temp(c, path_of_url, start, iterasi, wg, sem)
 			wg.Wait()
 		}
 	}
 }
 
-func dls(c *colly.Collector, path_of_url []string, url_scraped string, iterasi int, wg *sync.WaitGroup) {
+func dls(c *colly.Collector, path_of_url []string, url_scraped string, iterasi int, wg *sync.WaitGroup, sem chan struct{}) {
 	defer wg.Done()
+
 	// fmt.Println("IN")
 
 	var page string = "https://en.wikipedia.org/wiki/"
@@ -90,6 +111,17 @@ func dls(c *colly.Collector, path_of_url []string, url_scraped string, iterasi i
 	// fmt.Println("OUT")
 	iterasi -= 1
 	for j := 0; j < len(list_of_url); j++ {
+		limit := time.Now()
+		duration := limit.Sub(begin)
+		if ((duration > 30*time.Second) && (len(path_found) > 0)) || (duration > 5*time.Minute) {
+			fmt.Println("LIMIT")
+			fmt.Println("Path found : ", path_found)
+			fmt.Println("Number of links visited : ", total_link_visited)
+			fmt.Println("Path length : ", len(path_found[0]))
+			fmt.Println("Runtime : ", duration)
+			os.Exit(0)
+			break
+		}
 
 		if list_of_url[j] == destination {
 			new_path_of_url := make([]string, 0)
@@ -98,38 +130,39 @@ func dls(c *colly.Collector, path_of_url []string, url_scraped string, iterasi i
 			path_found = append(path_found, new_path_of_url)
 
 			// print duration
-			end := time.Now()
-			fmt.Println("Path found : ", path_found[0])
-			fmt.Println("Number of links visited : ", total_link_visited)
-			fmt.Println("Path length : ", len(path_found[0]))
-			fmt.Println("Runtime : ", end.Sub(begin))
-			os.Exit(0)
-		}
-		if iterasi > 0 {
-			new_path_of_url := make([]string, 0)
-			new_path_of_url = append(new_path_of_url, path_of_url...)
-			new_path_of_url = append(new_path_of_url, list_of_url[j])
-			wg.Add(1)
-			go func() {
-				dls(c, new_path_of_url, list_of_url[j], iterasi, wg)
-			}()
+			// end := time.Now()
+			// fmt.Println("Path found : ", path_found[0])
+			// fmt.Println("Number of links visited : ", total_link_visited)
+			// fmt.Println("Path length : ", len(path_found[0]))
+			// fmt.Println("Runtime : ", end.Sub(begin))
+			// os.Exit(0)
+		} else {
+			if iterasi > 0 {
+
+				new_path_of_url := make([]string, 0)
+				new_path_of_url = append(new_path_of_url, path_of_url...)
+				new_path_of_url = append(new_path_of_url, list_of_url[j])
+				// sem <- struct{}{}
+				wg.Add(1)
+				go func() {
+					// defer func() {
+					// 	<-sem
+					// }()
+					dls(c, new_path_of_url, list_of_url[j], iterasi, wg, sem)
+				}()
+				// temp(c, new_path_of_url, path_of_url[j], iterasi, wg, sem)
+			}
 		}
 	}
-	// for j := 0; j < len(list_of_url); j++ {
-	// 	title := getValidLink(list_of_url[j])
-	// 	if title == destination {
-	// 		new_path_of_url := make([]string, 0)
-	// 		new_path_of_url = append(new_path_of_url, path_of_url...)
-	// 		new_path_of_url = append(new_path_of_url, list_of_url[j])
-	// 		path_found = append(path_found, new_path_of_url)
+}
 
-	// 		// print duration
-	// 		end := time.Now()
-	// 		fmt.Println("Path found : ", path_found[0])
-	// 		fmt.Println("Number of links visited : ", total_link_visited)
-	// 		fmt.Println("Path length : ", len(path_found[0]))
-	// 		fmt.Println("Runtime : ", end.Sub(begin))
-	// 		os.Exit(0)
-	// 	}
-	// }
+func temp(c *colly.Collector, path_of_url []string, url_scraped string, iterasi int, wg *sync.WaitGroup, sem chan struct{}) {
+	sem <- struct{}{}
+	wg.Add(1)
+	go func() {
+		defer func() {
+			<-sem
+		}()
+		dls(c, path_of_url, url_scraped, iterasi, wg, sem)
+	}()
 }

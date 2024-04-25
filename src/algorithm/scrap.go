@@ -1,10 +1,7 @@
 package main
 
 import (
-	"fmt"
-	"os"
 	"strings"
-	"time"
 
 	"github.com/gocolly/colly/v2"
 )
@@ -68,22 +65,24 @@ func validasiLinkIDS(l *string, slice *[]string, new_path_of_url []string) {
 		// Extract the title of the Wikipedia page
 		// title = strings.ToLower(e.Text)
 		// title = addUnderScore(title)
+		title = e.Text
 		title = strings.ReplaceAll(e.Text, " ", "_")
 		if title == destination {
-			new_path_of_url = append(new_path_of_url, title)
+			new_path_of_url[len(new_path_of_url)-1] = title
+			// new_path_of_url = append(new_path_of_url, title)
 			path_found = append(path_found, new_path_of_url)
 
-			end := time.Now()
-			fmt.Println("Path found : ", path_found[0])
-			fmt.Println("Number of links visited : ", total_link_visited)
-			fmt.Println("Path length : ", len(path_found[0]))
-			fmt.Println("Runtime : ", end.Sub(begin))
-			os.Exit(0)
+			// end := time.Now()
+			// fmt.Println("Path found : ", path_found[0], "from title")
+			// fmt.Println("Number of links visited : ", total_link_visited)
+			// fmt.Println("Path length : ", len(path_found[0]))
+			// fmt.Println("Runtime : ", end.Sub(begin))
+			// os.Exit(0)
 		}
 	})
 	// fmt.Println(*l)
 	// scraping
-	c.OnHTML("p a[href^='/wiki']", func(e *colly.HTMLElement) {
+	c.OnHTML("a[href^='/wiki']", func(e *colly.HTMLElement) {
 		total_link_visited += 1
 		link := e.Attr("href")[6:]
 		if !strings.Contains(link, "File:") {
