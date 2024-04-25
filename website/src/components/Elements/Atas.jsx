@@ -1,6 +1,9 @@
 import { useState } from "react";
 import { SearchBar } from "./SearchBar";
 import { SearchResultsList } from "./SearchResultsList";
+import BarSearch from "./BarSearch";
+import SearchBarGenah from "./SearchBarGenah";
+import "./bg.css";
 
 const CucakRowo = (props) => {
   // const [selectedImage, setSelectedImage] = useState(null);
@@ -9,10 +12,10 @@ const CucakRowo = (props) => {
   // const { imageList, setImageList, timeElapsed, setTimeElapsed } = props;
 
   const [search, setSearch] = useState("");
-  const [results, setResults] = useState([]);
+  // const [results, setResults] = useState([]);
   const [searchinfo, setSearchInfo] = useState({});
 
-  const [hasils, setHasils] = useState([]);
+  const [results, setResults] = useState([]);
 
   const handleSearch = async (e) => {
     e.preventDefault();
@@ -36,80 +39,60 @@ const CucakRowo = (props) => {
   };
 
   return (
-    <div className="py-20 w-full min-h-screen flex flex-col justify-between bg-blue-950">
-      <div className="flex flex-col">
-        <div className="overflow-x-auto">
-          <p className="text-5xl mb-4 font-bold text-center text-white">
-            WIKIRACE SOLVER
-          </p>
-          <p className="text-2xl font-bold mb-10 text-center text-yellow-400">
-            DOMINVS VOBISCVM
-          </p>
-          <div className="flex flex-col mt-32 items-center justify-center">
-            <div>
-              <form className="search-box" onSubmit={handleSearch}>
-                {/* <label
+    <div className="py-20 w-full min-h-screen flex flex-col justify-between">
+      <div className="background">
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+
+        <div className="flex flex-col mt-20">
+          <div className="overflow-x-auto">
+            <p className="text-6xl mb-4 font-bold text-center text-white relative">
+              WIKIRACE SOLVER
+            </p>
+            <p className="text-3xl font-bold mb-10 text-center text-yellow-400 relative">
+              DOMINVS VOBISCVM
+            </p>
+            <div className="flex flex-row mt-32 items-center justify-center">
+              <div className="">
+                <label
                   htmlFor="start_page"
-                  className="text-center text-xl block mb-2 font-medium text-white"
+                  className="text-center text-xl block mb-2 font-medium text-white relative"
                 >
                   Start Page
-                </label> */}
-                <input
-                  type="search"
-                  placeholder="Input start page here ..."
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
-                  // id="start_page"
-                  className="mb-8 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-80 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                  // required
-                />
-              </form>
-              {/* <p className="text-center text-white">Search result</p> */}
-              {searchinfo.totalhits ? (
-                <p className="text-center text-white">
-                  Search results: {searchinfo.totalhits}
-                </p>
-              ) : (
-                ""
-              )}
-              <div className="results">
-                {results.map((result, i) => {
-                  const url = `https://en.wikipedia.org/?curid=${result.pageid}`;
-
-                  return (
-                    <>
-                      <div className="result" key={i}>
-                        <h3 className="text-white">{result.title}</h3>
-                        <p
-                          dangerouslySetInnerHTML={{ __html: result.snippet }}
-                          className="text-white"
-                        ></p>
-                        <a
-                          className="text-white"
-                          href={url}
-                          target="_blank"
-                          rel="noreferrer"
-                        >
-                          Read more
-                        </a>
-                      </div>
-                    </>
-                  );
-                })}
+                </label>
+                <div className="h-screen text-black">
+                  <div className="search-bar-container">
+                    <SearchBarGenah />
+                  </div>
+                </div>
               </div>
-
-              <label
-                htmlFor="final_page"
-                className="text-center text-xl block mb-2 font-medium text-white"
-              >
-                Final Page
-              </label>
-              <div className="h-64 text-black">
-                <div className="search-bar-container text-black">
-                  <SearchBar setHasils={setHasils} />
-                  {hasils && hasils.length > 0 && (
-                    <SearchResultsList hasils={hasils} />
-                  )}
+              <div className="">
+                <label
+                  htmlFor="final_page"
+                  className="text-center text-xl block mb-2 font-medium text-white relative"
+                >
+                  Final Page
+                </label>
+                <div className="h-screen text-black">
+                  <div className="search-bar-container">
+                    <SearchBarGenah />
+                  </div>
                 </div>
               </div>
             </div>
@@ -138,4 +121,63 @@ export default CucakRowo;
                     Texture
                   </a>
                 </div> */
+}
+
+{
+  /* <form className="search-box" onSubmit={handleSearch}>
+                <label
+                  htmlFor="start_page"
+                  className="text-center text-xl block mb-2 font-medium text-white"
+                >
+                  Start Page
+                </label>
+                <input
+                  type="search"
+                  placeholder="Input start page here ..."
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  // id="start_page"
+                  className="mb-8 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-80 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                  // required
+                />
+              </form> */
+}
+{
+  /* <p className="text-center text-white">Search result</p> */
+}
+{
+  /* {searchinfo.totalhits ? (
+                <p className="text-center text-white">
+                  Search results: {searchinfo.totalhits}
+                </p>
+              ) : (
+                ""
+              )} */
+}
+{
+  /* <div className="results">
+                {results.map((result, i) => {
+                  const url = `https://en.wikipedia.org/?curid=${result.pageid}`;
+
+                  return (
+                    <>
+                      <div className="result" key={i}>
+                        <h3 className="text-white">{result.title}</h3>
+                        <p
+                          dangerouslySetInnerHTML={{ __html: result.snippet }}
+                          className="text-white"
+                        ></p>
+                        <a
+                          className="text-white"
+                          href={url}
+                          target="_blank"
+                          rel="noreferrer"
+                        >
+                          Read more
+                        </a>
+                      </div>
+                    </>
+                  );
+                })}
+              </div> */
 }

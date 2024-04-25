@@ -1,12 +1,23 @@
 import "./SearchResult.css";
-export const SearchResult = ({ hasil }) => {
+
+export const SearchResult = ({ result }) => {
   return (
     <div
-      className="search-result text-black"
-      onClick={(e) => alert(`You selected ${hasil}!`)}
-      // onClick={console.log(`You selected ${hasil}!`)}
+      className="search-result"
+      onClick={(e) => alert(`You selected ${result}!`)}
     >
-      {hasil}
+      {result}
     </div>
   );
 };
+
+// export const SearchResult = ({ result }) => {
+//   return (
+//     <div
+//       className="search-result"
+//       onChange={(e) => setSearch(e.target.value)}
+//     >
+//       {result}
+//     </div>
+//   );
+// };
