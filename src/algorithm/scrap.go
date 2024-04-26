@@ -14,6 +14,13 @@ func isIn(lis[] string, s string) bool {
 	return false
 }
 
+func isInNode(lis []Node, s string) bool {
+	for i := 0; i < len(lis); i++ {
+		if (s == lis[i].link) {return true}
+	}
+	return false
+}
+
 func makePath(m map[string]string, now string, des string) []string {
 	path := []string{now}
 	parent := ""
