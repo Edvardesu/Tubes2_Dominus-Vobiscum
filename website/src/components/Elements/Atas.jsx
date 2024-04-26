@@ -1,16 +1,49 @@
 import { useState } from "react";
-import { SearchBar } from "./SearchBar";
-import { SearchResultsList } from "./SearchResultsList";
-import BarSearch from "./BarSearch";
-import SearchBarGenah from "./SearchBarGenah";
+import styled from "styled-components";
 import "./bg.css";
+import SearchBarGenah from "./SearchBarGenah";
+
+function clickMe() {
+  alert("You clicked me!");
+}
+
+const theme = {
+  blue: {
+    default: "#3f51b5",
+    hover: "#283593",
+  },
+  pink: {
+    default: "#e91e63",
+    hover: "#ad1457",
+  },
+};
+
+const Button = styled.button`
+  background-color: ${(props) => theme[props.theme].default};
+  color: white;
+  padding: 5px 15px;
+  border-radius: 5px;
+  outline: 0;
+  border: 0;
+  text-transform: uppercase;
+  margin: 10px 0px;
+  cursor: pointer;
+  box-shadow: 0px 2px 2px lightgray;
+  transition: ease background-color 250ms;
+  &:hover {
+    background-color: ${(props) => theme[props.theme].hover};
+  }
+  &:disabled {
+    cursor: default;
+    opacity: 0.7;
+  }
+`;
+
+Button.defaultProps = {
+  theme: "blue",
+};
 
 const CucakRowo = (props) => {
-  // const [selectedImage, setSelectedImage] = useState(null);
-  // const [selectedImagesArray] = useState([]);
-  // const [toggleState, setToggleSetState] = useState(0);
-  // const { imageList, setImageList, timeElapsed, setTimeElapsed } = props;
-
   const [search, setSearch] = useState("");
   // const [results, setResults] = useState([]);
   const [searchinfo, setSearchInfo] = useState({});
@@ -39,7 +72,7 @@ const CucakRowo = (props) => {
   };
 
   return (
-    <div className="py-20 w-full min-h-screen flex flex-col justify-between">
+    <div className="py-20 w-full h-full flex flex-col justify-between">
       <div className="background">
         <span></span>
         <span></span>
@@ -60,42 +93,46 @@ const CucakRowo = (props) => {
         <span></span>
         <span></span>
 
-        <div className="flex flex-col mt-20">
-          <div className="overflow-x-auto">
-            <p className="text-6xl mb-4 font-bold text-center text-white relative">
-              WIKIRACE SOLVER
-            </p>
-            <p className="text-3xl font-bold mb-10 text-center text-yellow-400 relative">
-              DOMINVS VOBISCVM
-            </p>
-            <div className="flex flex-row mt-32 items-center justify-center">
-              <div className="">
-                <label
-                  htmlFor="start_page"
-                  className="text-center text-xl block mb-2 font-medium text-white relative"
-                >
-                  Start Page
-                </label>
-                <div className="h-screen text-black">
-                  <div className="search-bar-container">
-                    <SearchBarGenah />
-                  </div>
-                </div>
-              </div>
-              <div className="">
-                <label
-                  htmlFor="final_page"
-                  className="text-center text-xl block mb-2 font-medium text-white relative"
-                >
-                  Final Page
-                </label>
-                <div className="h-screen text-black">
-                  <div className="search-bar-container">
-                    <SearchBarGenah />
-                  </div>
+        <div className="flex flex-col mt-20 overflow-x-auto ">
+          <p className="text-6xl mb-4 font-bold text-center text-white relative">
+            WIKIRACE SOLVER
+          </p>
+          <p className="text-3xl font-bold mb-10 text-center text-yellow-400 relative">
+            DOMINVS VOBISCVM
+          </p>
+          <div className="flex flex-row mt-32 items-center justify-center gap-4 ">
+            <div className="">
+              <label
+                htmlFor="start_page"
+                className="text-center text-xl block mb-2 font-medium text-white relative"
+              >
+                Start Page
+              </label>
+              <div className="h-full text-black">
+                <div className="search-bar-container">
+                  <SearchBarGenah />
                 </div>
               </div>
             </div>
+
+            <div className="">
+              <label
+                htmlFor="final_page"
+                className="text-center text-xl block mb-2 font-medium text-white relative"
+              >
+                Final Page
+              </label>
+              <div className="h-full text-black">
+                <div className="search-bar-container">
+                  <SearchBarGenah />
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="mt-8 text-center items-center justify-center gap-4 relative"> 
+            <button className="text-3xl bg-red-500 hover:bg-red-700 text-white font-semibold py-8 px-20 rounded-full relative border border-white hover:border-transparent">
+              SIKATTT !!!
+            </button>
           </div>
         </div>
       </div>

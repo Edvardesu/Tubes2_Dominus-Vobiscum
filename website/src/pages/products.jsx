@@ -14,10 +14,10 @@ const ProductsPage = () => {
   }, [imageList]);
 
   return (
-    <div className="flex w-full" style={{ backgroundColor: "#28293D" }}>
+    <div className="flex w-full" >
       <Fragment>
         <div className="flex flex-initial justify-center items-center w-full">
-          <div className="flex flex-col w-full">
+          <div className="flex flex-col w-full ">
             {/* <Navbar /> */}
             <CucakRowo
               imageList={imageList}

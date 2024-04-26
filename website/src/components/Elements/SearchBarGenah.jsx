@@ -57,7 +57,7 @@ const SearchBarGenah = () => {
   }, [search]);
 
   return (
-    <section className="search_section h-screen">
+    <section className="search_section ">
       <div className="search_input_div">
         <input
           type="text"
@@ -73,7 +73,7 @@ const SearchBarGenah = () => {
         </div>
       </div>
       {searchData.length > 0 && (
-        <div className="search_result">
+        <div className="search_result ">
           {searchData.map((item, index) => {
             return (
               <div
