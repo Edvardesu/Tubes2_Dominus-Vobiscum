@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"os"
 	"sync"
 	"time"
 
@@ -14,9 +13,11 @@ var destination string
 var path_found [][]string // list berisi jalur menuju tujuan
 var begin time.Time
 var total_link_visited int
+var single_path bool
 
 func main() {
 	begin = time.Now()
+	single_path = false
 
 	fmt.Println("Starting WikiRace!\n")
 	var wg sync.WaitGroup
@@ -27,11 +28,11 @@ func main() {
 	destination = "Cooked_rice"
 
 	central(c, &wg)
+
 	fmt.Println("Program finished!")
 }
 
 func central(c *colly.Collector, wg *sync.WaitGroup) {
-	sem := make(chan struct{}, 10)
 	begin = time.Now()
 	var iterasi int = 0
 
@@ -41,14 +42,39 @@ func central(c *colly.Collector, wg *sync.WaitGroup) {
 		fmt.Println("Path found : [", start, "]")
 		fmt.Println("Number of links visited : 0")
 		fmt.Println("Path length : 1")
-		fmt.Println("Runtime : ", end.Sub(begin))
+		fmt.Println("Runtime : ", end.Sub(begin).Milliseconds(), "ms")
 	} else {
 		var path_of_url []string // list berisi judul wiki yang dilewatin
 		path_of_url = append(path_of_url, start)
 
 		for {
+			if len(path_found) > 0 {
+				if !single_path && len(path_found) > 0 {
+					var new_path_found [][]string
+					depth := 100
+					for i := 0; i < len(path_found); i++ {
+						if len(path_found[i]) < depth {
+							depth = len(path_found[i])
+						}
+					}
+					for j := 0; j < len(path_found); j++ {
+						if len(path_found[j]) == depth {
+							new_path_found = append(new_path_found, path_found[j])
+						}
+					}
+					path_found = new_path_found
+				}
+				end := time.Now()
+				fmt.Println("Path found : ", path_found)
+				fmt.Println("Number of links visited : ", total_link_visited)
+				fmt.Println("Path length : ", len(path_found[0]))
+				fmt.Println("Runtime : ", end.Sub(begin).Milliseconds(), "ms")
+				break
+			}
 
-			// if len(path_found) > 0 {
+			// limit := time.Now()
+			// duration := limit.Sub(begin)
+			// if ((duration > 2*time.Minute+30*time.Second) && (len(path_found) > 0)) || (duration > 5*time.Minute) {
 			// 	end := time.Now()
 			// 	fmt.Println("Path found : ", path_found)
 			// 	fmt.Println("Number of links visited : ", total_link_visited)
@@ -56,17 +82,6 @@ func central(c *colly.Collector, wg *sync.WaitGroup) {
 			// 	fmt.Println("Runtime : ", end.Sub(begin))
 			// 	break
 			// }
-
-			limit := time.Now()
-			duration := limit.Sub(begin)
-			if ((duration > 30*time.Second) && (len(path_found) > 0)) || (duration > 5*time.Minute) {
-				end := time.Now()
-				fmt.Println("Path found : ", path_found)
-				fmt.Println("Number of links visited : ", total_link_visited)
-				fmt.Println("Path length : ", len(path_found[0]))
-				fmt.Println("Runtime : ", end.Sub(begin))
-				break
-			}
 
 			if iterasi == 5 {
 				fmt.Println("Sengaja dibatesin 5, coba tanya Vanson")
@@ -80,46 +95,41 @@ func central(c *colly.Collector, wg *sync.WaitGroup) {
 			fmt.Println("Depth ", iterasi)
 
 			wg.Add(1)
-			sem <- struct{}{}
 			go func() {
-				// defer func() {
-				// 	<-sem
-				// }()
-				dls(c, path_of_url, start, iterasi, wg, sem)
+				dls(c, path_of_url, start, iterasi, wg)
 			}()
-			// temp(c, path_of_url, start, iterasi, wg, sem)
 			wg.Wait()
 		}
 	}
 }
 
-func dls(c *colly.Collector, path_of_url []string, url_scraped string, iterasi int, wg *sync.WaitGroup, sem chan struct{}) {
+func dls(c *colly.Collector, path_of_url []string, url_scraped string, iterasi int, wg *sync.WaitGroup) {
 	defer wg.Done()
-
-	// fmt.Println("IN")
+	sem := make(chan struct{}, 5)
 
 	var page string = "https://en.wikipedia.org/wiki/"
 
-	// var list_of_url []string
 	list_of_url := make([]string, 0)
 	var link_to_visit string = page + url_scraped
 
 	new_path_of_url := make([]string, 0)
 	new_path_of_url = append(new_path_of_url, path_of_url...)
 	validasiLinkIDS(&link_to_visit, &list_of_url, new_path_of_url)
-	// fmt.Println(list_of_url)
-	// fmt.Println("OUT")
+
 	iterasi -= 1
 	for j := 0; j < len(list_of_url); j++ {
 		limit := time.Now()
 		duration := limit.Sub(begin)
-		if ((duration > 30*time.Second) && (len(path_found) > 0)) || (duration > 5*time.Minute) {
-			fmt.Println("LIMIT")
-			fmt.Println("Path found : ", path_found)
-			fmt.Println("Number of links visited : ", total_link_visited)
-			fmt.Println("Path length : ", len(path_found[0]))
-			fmt.Println("Runtime : ", duration)
-			os.Exit(0)
+		if (single_path) && (len(path_found) > 0) {
+			break
+		}
+		if duration > 4*time.Minute+45*time.Second {
+			// fmt.Println("LIMIT")
+			// fmt.Println("Path found : ", path_found)
+			// fmt.Println("Number of links visited : ", total_link_visited)
+			// fmt.Println("Path length : ", len(path_found[0]))
+			// fmt.Println("Runtime : ", duration)
+			// os.Exit(0)
 			break
 		}
 
@@ -142,27 +152,15 @@ func dls(c *colly.Collector, path_of_url []string, url_scraped string, iterasi i
 				new_path_of_url := make([]string, 0)
 				new_path_of_url = append(new_path_of_url, path_of_url...)
 				new_path_of_url = append(new_path_of_url, list_of_url[j])
-				// sem <- struct{}{}
+				sem <- struct{}{}
 				wg.Add(1)
 				go func() {
-					// defer func() {
-					// 	<-sem
-					// }()
-					dls(c, new_path_of_url, list_of_url[j], iterasi, wg, sem)
+					defer func() {
+						<-sem
+					}()
+					dls(c, new_path_of_url, list_of_url[j], iterasi, wg)
 				}()
-				// temp(c, new_path_of_url, path_of_url[j], iterasi, wg, sem)
 			}
 		}
 	}
-}
-
-func temp(c *colly.Collector, path_of_url []string, url_scraped string, iterasi int, wg *sync.WaitGroup, sem chan struct{}) {
-	sem <- struct{}{}
-	wg.Add(1)
-	go func() {
-		defer func() {
-			<-sem
-		}()
-		dls(c, path_of_url, url_scraped, iterasi, wg, sem)
-	}()
 }
