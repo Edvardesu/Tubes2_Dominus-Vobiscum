@@ -1,28 +1,50 @@
 package main
 
 import (
-	"fmt"
-	"log"
-	"reflect"
 	"strings"
+	"reflect"
+	"slices"
+	"log"
+	"fmt"
 	"sync"
 	"time"
-
 	"github.com/gocolly/colly/v2"
 )
 
-var start string
-var destination string
-var path_found [][]string
-var begin time.Time
-var total_link_visited int
-var single_path bool
-var max_depth int
+// Utility umum
+/*
+variable global agar mudah diakses di dalam fungsi
+*/
+var start string           // judul awal Wiki Race
+var destination string     // judul tujuan Wiki Race
+var path_found [][]string  // list berisi jalur menuju tujuan
+var begin time.Time        // waktu mulai
+var exTime int64	   // Waktu eksekusi program
+var total_link_visited int // total link yang dikunjungi
+var single_path bool       // true jika pemilihan IDS/BFS single_path
 
-// Node untuk mencatat link dan kedalamannya
+func isIn(lis []string, s string) bool {
+	for i := 0; i < len(lis); i++ {
+		if (s == lis[i]) {return true}
+	}
+	return false
+}
+
+func cutLink(l string, i int) string {
+	return l[:i]
+}
+
+// BFS
 type Node struct {
 	link  string
 	depth int
+}
+
+func isInNode(lis []Node, s string) bool {
+	for i := 0; i < len(lis); i++ {
+		if (s == lis[i].link) {return true}
+	}
+	return false
 }
 
 func isInPath(mat [][]string, lis []string) bool {
@@ -32,6 +54,19 @@ func isInPath(mat [][]string, lis []string) bool {
 		}
 	}
 	return false
+}
+
+func makePath(m map[string]string, now string, des string) []string {
+	path := []string{now}
+	parent := ""
+	for parent != "start" {
+		parent = m[now]
+		path = append(path, parent)
+		now = parent
+	}
+	slices.Reverse(path)
+	path = append(path, des)
+	return path[1:]
 }
 
 func validasiLinkBFS(queue *[]Node, m map[string]string, x *sync.Mutex, wg *sync.WaitGroup) {
@@ -113,84 +148,46 @@ func validasiLinkBFS(queue *[]Node, m map[string]string, x *sync.Mutex, wg *sync
 	c.Visit("https://en.wikipedia.org/wiki/" + l)
 }
 
-// func BFS(awal string, akhir string) ([][]string, int, int, int64) {
-func main() {
-	total_link_visited = 0
-	var wait sync.WaitGroup
-	var mut sync.Mutex
-	var unvisitedQueue []Node // Queue untuk menyimpan link yang belum dikunjungi
-	var minPath int // Jalur minimum dari start ke tujuan
-	// HAPUS
-	single_path = false
-	// HAPUS
-	max_depth = 100
+// IDS
+func validasiLinkIDS(l *string, slice *[]string, new_path_of_url []string) {
+	total_link_visited += 1
+	c := colly.NewCollector(colly.AllowedDomains("en.wikipedia.org"), colly.CacheDir("./Cache"))
 
-	// start = awal // nanti ini input start
-	// destination = akhir // nanti ini input final
-	var startNode Node
-	// HAPUS
-	startNode.link = "Neuroscience" // nanti ini input start
-	startNode.depth = 0
-	destination = "Springtail" // nanti ini input final
-	// HAPUS
-	unvisitedQueue = append(unvisitedQueue, startNode)
-
-	// Jadikan link pertama sebagai start
-	visitedMap := map[string]string{startNode.link: "start"}
-
-	// hitung waktu proses BFS
-	begin = time.Now()
-	sekarang := begin
-	// Loop berhenti jika queue habis atau waktu melebihi 4,5 menit atau kedalaman dengan rute terpendek sudah dicek semua
-	for (sekarang.Sub(begin) <= 4*time.Minute+30*time.Second) && len(unvisitedQueue) > 0 && unvisitedQueue[0].depth < max_depth {
-		// Cari jumlah proses yang dijalankan (maksimal 200)
-		n_child := len(unvisitedQueue)
-		if n_child > 200 {
-			n_child = 200
+	// checking title
+	var flag bool = false // ini true jika destinasi nya adalah string yang divisit
+	var title string
+	c.OnHTML(".firstHeading", func(e *colly.HTMLElement) {
+		title = e.Text
+		title = strings.ReplaceAll(e.Text, " ", "_")
+		if title == destination {
+			new_path_of_url[len(new_path_of_url)-1] = title
+			path_found = append(path_found, new_path_of_url)
+			flag = true
 		}
+	})
 
-		// Lakukan proses BFS
-		for i := 0; i < n_child; i++ {
-			wait.Add(1)
-			go validasiLinkBFS(&unvisitedQueue, visitedMap, &mut, &wait)
-		}
-		wait.Wait()
-
-		// Bereskan jika hanya mencari 1 path
-		if single_path && len(path_found) > 0 {
-			path_found = path_found[:1]
-			break
-		}
-
-		sekarang = time.Now()
+	// scraping
+	if !flag {
+		scraping(c, slice)
 	}
+	// Start scraping
+	c.Visit(*l)
+}
 
-	exTime := sekarang.Sub(begin).Milliseconds()
-	if len(path_found) > 0 {
-		minPath = len(path_found[0])
-		for i := 0; i < len(path_found); i++ {
-			if len(path_found[i]) < minPath {
-				minPath = len(path_found[i])
+func scraping(c *colly.Collector, slice *[]string) {
+	c.OnHTML("a[href^='/wiki']", func(e *colly.HTMLElement) {
+		link := e.Attr("href")[6:]
+		if (!strings.Contains(link, ":")) && (!strings.Contains(link, "disambiguation")) && (!strings.Contains(link, "Main_Page")) {
+			// cek apakah link mengandung #
+			n := strings.Index(link, "#")
+			if n != -1 {
+				link = cutLink(link, n)
+			}
+
+			// cek apakah link ada di array URL
+			if !isIn(*slice, link) {
+				*slice = append(*slice, link)
 			}
 		}
-
-		var sementara [][]string
-		for i := 0; i < len(path_found); i++ {
-			if len(path_found[i]) == minPath {
-				sementara = append(sementara, path_found[i])
-			}
-		}
-		path_found = sementara
-
-		fmt.Println("List of paths:")
-		fmt.Println(path_found)
-		fmt.Printf("Found %d path(s), with minimum depth %d\n", len(path_found), minPath-1)
-	} else {
-		minPath = -1
-		fmt.Println("No path found")
-	}
-	fmt.Println("Exec time:", exTime, "ms")
-	fmt.Printf("Link visited: %d\n", total_link_visited)
-
-	// return path, minPath, total_link, exTime
+	})
 }
