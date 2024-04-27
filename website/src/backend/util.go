@@ -29,6 +29,7 @@ type Result struct {
     PathLength       int        `json:"path_length"`
     DurationInMS     int64      `json:"duration_in_ms"`
 	SinglePath		bool		`json:"single_path"`
+	PathAmount       int        `json:"path_amount"`
 }
 
 func isIn(lis []string, s string) bool {

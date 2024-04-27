@@ -28,12 +28,12 @@ const Navbar = () => {
             Main
           </Link>
           <Link to="/konsep" className="block mb-4 lg:inline-block lg:mt-0 text-white hover:text-yellow-300 mr-10 no-underline">
-            Konsep Search Engine
+            Konsep BFS IDS
           </Link>
           <Link to="/howToUse" className="block mt-4 lg:inline-block lg:mt-0 text-white hover:text-yellow-300 mr-10 no-underline">
             How to Use
           </Link>
-          <Link to="/aboutUs" className="block mt-4 lg:inline-block lg:mt-0 text-white hover:text-yellow-300 mr-10 no-underline">
+          <Link to="/aboutus" className="block mt-4 lg:inline-block lg:mt-0 text-white hover:text-yellow-300 mr-10 no-underline">
             About us
           </Link>
         </div>

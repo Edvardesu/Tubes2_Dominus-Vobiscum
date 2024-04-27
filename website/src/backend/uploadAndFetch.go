@@ -49,9 +49,13 @@ func UploadTextBFS(w http.ResponseWriter, r *http.Request) {
 	// Prepare the JSON response
 	response := map[string]interface{}{
 	//  "messageType": "S",
-	 "message":     "This is BFS !!!",
+	"message":     "This is BFS !!!",
 	"paths": result.Paths,
 	"single_path": result.SinglePath,
+	"total_links": result.TotalLinks,
+	"path_length": result.PathLength,
+	"exec_time": result.DurationInMS,
+	"path_amount": result.PathAmount,
 	}
 
 	 // Encode the result into JSON and send it back to the client
@@ -94,7 +98,10 @@ func UploadTextIDS(w http.ResponseWriter, r *http.Request) {
 		"message":     "This is IDS !!!!",
 		"paths": result.Paths,
 		"single_path": result.SinglePath,
-
+		"total_links": result.TotalLinks,
+		"path_length": result.PathLength,
+		"exec_time": result.DurationInMS,
+		"path_amount": result.PathAmount,
 	 }
  
 	 // Set content type and write the status code

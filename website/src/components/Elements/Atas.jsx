@@ -88,7 +88,10 @@ const CucakRowo = (props) => {
   const [inputEnd, setInputEnd] = useState("");
   const [start, setStart] = useState("");
   const [destination, setDestination] = useState("");
-  const [responseOutput, setResponseOutput] = useState(""); // State to store the backend response
+  const [responseOutput, setResponseOutput] = useState({
+    paths: [],
+    extraData: {},
+  });
   const [singlePath, setSinglePath] = useState(false); // false as the default value
   const [isLoading, setIsLoading] = useState(false); // New state for loading indicator
 
@@ -111,10 +114,21 @@ const CucakRowo = (props) => {
       });
 
       const data = await response.json();
+      console.log("Received data:", data);
+
       if (data && Array.isArray(data.paths)) {
-        setResponseOutput(data.paths);
+        setResponseOutput({
+          paths: data.paths,
+          extraData: {
+            singlePath: data.single_path,
+            totalLinks: data.total_links, // from IDS
+            pathLength: data.path_length, // from IDS
+            execTime: data.exec_time, // from IDS
+            pathAmount: data.path_amount, // from IDS
+          },
+        });
       } else {
-        setResponseOutput([]);
+        setResponseOutput({ paths: [], extraData: {} });
       }
     } catch (error) {
       console.error("Failed to fetch paths:", error);
@@ -243,29 +257,52 @@ const CucakRowo = (props) => {
             </form>
           </div>
           <div className="mt-40 mb-20 mx-20 bg-black relative border-8 border-yellow-400 rounded-xl">
-            <div className="py-20 bg-white text-center">
+            <div className="pt-16 pb-8 bg-white text-center">
               <p className="text-black font-bold text-5xl">RESULTS</p>
+              <div>
+                {responseOutput.extraData.totalLinks && (
+                  <div className="extra-info text-center text-xl text-black bg-white my-8 mx-8">
+                    <p className="font-bold text-red-700">
+                      Total Links : {responseOutput.extraData.totalLinks}
+                    </p>
+                    <p className="font-bold text-yellow-600">
+                      Path Length : {responseOutput.extraData.pathLength}
+                    </p>
+                    <p className="font-bold text-green-700">
+                      Execution Time : {responseOutput.extraData.execTime} ms
+                    </p>
+                    <p className="font-bold text-blue-700">
+                      Path Amount : {responseOutput.extraData.pathAmount}
+                    </p>
+                  </div>
+                )}
+              </div>
             </div>
             <div>
-              {responseOutput.length > 0 ? (
+              {responseOutput.paths.length > 0 ? (
                 <div className="response-container items-center justify-center bg-blue-200 flex flex-row">
-                  {responseOutput.map((pathList, listIndex) => (
-                    <div
-                      key={listIndex}
-                      className="response-output text-center text-xl text-black bg-white my-8 px-16 py-20 mx-8 border-4 border-black rounded-3xl"
-                    >
-                      <ul>
-                        {pathList.map((path, pathIndex) => (
-                          <li
-                            key={pathIndex}
-                            className="mb-4 text-2xl font-bold"
-                          >
-                            {path}
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  ))}
+                  {responseOutput.paths.slice(0, 4).map(
+                    (
+                      pathList,
+                      listIndex // Only display up to 4 paths
+                    ) => (
+                      <div
+                        key={listIndex}
+                        className="response-output text-center text-xl text-black bg-white my-8 px-8 py-20 mx-8 border-4 border-black rounded-3xl"
+                      >
+                        <ul>
+                          {pathList.map((path, pathIndex) => (
+                            <li
+                              key={pathIndex}
+                              className="mb-4 text-2xl font-bold"
+                            >
+                              {path}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )
+                  )}
                 </div>
               ) : (
                 <p className="text-center text-xl text-white">

@@ -5,6 +5,8 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import ErrorPage from "./pages/404.jsx";
 import ProductsPage from "./pages/products.jsx";
 import TesGraph from "./pages/TesGraph.jsx";
+import AboutUs from "./pages/aboutus.jsx";
+
 
 const router = createBrowserRouter([
   {
@@ -13,9 +15,17 @@ const router = createBrowserRouter([
     errorElement: <ErrorPage />,
   },
   {
+    path: "/aboutus",
+    element: <AboutUs />,
+  },
+  {
     path: "/tes",
     element: <TesGraph />,
   },
+  // {
+  //   path: "/tes",
+  //   element: <TesGraph />,
+  // },
 ]);
 
 ReactDOM.createRoot(document.getElementById("root")).render(
