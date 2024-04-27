@@ -17,7 +17,7 @@ Algoritma BFS sebagai berikut:
 4. Jika ditemukan judul artikel tujuan ketika pranala ditelusuri, program akan mencari jalurnya dari map.
 5. Jika judul artikel yang dituju sama dengan judul artikel yang ditelusuri, maka program akan mencari<br>jalurnya dan menghentikan penelusuran
 <br>
-- Algoritma IDS sebagai berikut:
+Algoritma IDS sebagai berikut:
 1. Algoritma IDS menggunakan DLS dengan pengecekan awal pada kedalaman 0, kemudian bertambah 1 di setiap iterasinya
 2. Program akan mengecek link yang pertama ditemukan sampai batas kedalaman tertentu.
 3. Program tidak melakukan _backtrack_, tetapi mengecek setiap link yang ditemukan secara rekursif
