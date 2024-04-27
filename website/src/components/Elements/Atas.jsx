@@ -98,10 +98,14 @@ const CucakRowo = (props) => {
   const handleSubmit = async (event) => {
     event.preventDefault();
 
+    // Clear previous results before fetching new data
+    setResponseOutput({ paths: [], extraData: {} });
+    setIsLoading(true); // Set loading to true before the request
+
     const requestData = {
       start: start,
       destination: destination,
-      single_path: singlePath, // Add this line to include the toggle state in the request
+      single_path: singlePath,
     };
 
     try {
@@ -132,7 +136,7 @@ const CucakRowo = (props) => {
       }
     } catch (error) {
       console.error("Failed to fetch paths:", error);
-      setResponseOutput([]);
+      setResponseOutput({ paths: [], extraData: {} });
     }
     setIsLoading(false); // Set loading to false after the fetch completes
   };
@@ -318,134 +322,3 @@ const CucakRowo = (props) => {
 };
 
 export default CucakRowo;
-
-{
-  /* <label>
-                Start:
-                <input
-                  type="text"
-                  value={start}
-                  onChange={(e) => setStart(e.target.value)}
-                />
-              </label>
-              <label>
-                Destination:
-                <input
-                  type="text"
-                  value={destination}
-                  onChange={(e) => setDestination(e.target.value)}
-                />
-              </label> */
-}
-{
-  /* <div className="bg-white text-center">
-                <button type="submit">Submit</button>
-              </div> */
-}
-
-{
-  /* <div className="">
-              <label
-                htmlFor="start_page"
-                className="text-center text-xl block mb-2 font-medium text-white relative"
-              >
-                Start Page
-              </label>
-              <div className="h-full text-black">
-                <div className="search-bar-container">
-                  <SearchBarGenahStart />
-                </div>
-              </div>
-            </div>
-
-            <div className="">
-              <label
-                htmlFor="final_page"
-                className="text-center text-xl block mb-2 font-medium text-white relative"
-              >
-                Final Page
-              </label>
-              <div className="h-full text-black">
-                <div className="search-bar-container">
-                  <SearchBarGenahDest />
-                </div>
-              </div>
-            </div> */
-}
-
-{
-  /* <div className="flex flex-row">
-                  <a
-                    href="#"
-                    className="inline-block text-xl align-middle px-6 py-2 mx-2 leading-none border rounded-lg text-black border-white hover:border-transparent hover:text-white hover:bg-yellow-500 bg-white font-semibold"
-                    onClick={handleColorSearch}
-                  >
-                    Color
-                  </a>
-                  <a
-                    href="#"
-                    className="inline-block text-xl align-middle px-6 py-2 leading-none border rounded-lg text-black border-white hover:border-transparent hover:text-white hover:bg-yellow-500 bg-white font-semibold"
-                  >
-                    Texture
-                  </a>
-                </div> */
-}
-
-{
-  /* <form className="search-box" onSubmit={handleSearch}>
-                <label
-                  htmlFor="start_page"
-                  className="text-center text-xl block mb-2 font-medium text-white"
-                >
-                  Start Page
-                </label>
-                <input
-                  type="search"
-                  placeholder="Input start page here ..."
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
-                  // id="start_page"
-                  className="mb-8 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-80 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                  // required
-                />
-              </form> */
-}
-{
-  /* <p className="text-center text-white">Search result</p> */
-}
-{
-  /* {searchinfo.totalhits ? (
-                <p className="text-center text-white">
-                  Search results: {searchinfo.totalhits}
-                </p>
-              ) : (
-                ""
-              )} */
-}
-{
-  /* <div className="results">
-                {results.map((result, i) => {
-                  const url = `https://en.wikipedia.org/?curid=${result.pageid}`;
-
-                  return (
-                    <>
-                      <div className="result" key={i}>
-                        <h3 className="text-white">{result.title}</h3>
-                        <p
-                          dangerouslySetInnerHTML={{ __html: result.snippet }}
-                          className="text-white"
-                        ></p>
-                        <a
-                          className="text-white"
-                          href={url}
-                          target="_blank"
-                          rel="noreferrer"
-                        >
-                          Read more
-                        </a>
-                      </div>
-                    </>
-                  );
-                })}
-              </div> */
-}

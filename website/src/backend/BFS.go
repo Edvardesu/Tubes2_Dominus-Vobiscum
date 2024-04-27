@@ -9,6 +9,7 @@ import (
 var max_depth int // Variabel untuk mengatur kedalaman maksimal
 
 func BFS(startUrl, destinationUrl string, single_pathTes bool) Result {
+ 
  if startUrl == destinationUrl {
   return Result{
    Paths:        path_found,
@@ -23,6 +24,8 @@ func BFS(startUrl, destinationUrl string, single_pathTes bool) Result {
   var wait sync.WaitGroup
   var mut sync.Mutex
   var unvisitedQueue []Node // Queue untuk menyimpan link yang belum dikunjungi
+  var peganggan [][]string
+  path_found = peganggan
   var minPath int // Jalur minimum dari start ke tujuan
   // HAPUS
   single_path = single_pathTes
