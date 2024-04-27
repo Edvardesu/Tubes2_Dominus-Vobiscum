@@ -62,7 +62,7 @@ const CucakRowo = (props) => {
       destination: destination,
     };
 
-    const response = await fetch("http://localhost:8080/upload", {
+    const response = await fetch("http://localhost:8080/uploadids", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
