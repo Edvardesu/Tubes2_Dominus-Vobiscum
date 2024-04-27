@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
 	"strings"
 
 	"net/http"
@@ -24,8 +23,9 @@ func Ping(w http.ResponseWriter, r *http.Request) {
 func UploadTextBFS(w http.ResponseWriter, r *http.Request) {
 	// Define a struct to match the expected input
 	type RequestData struct {
-		Start       string `json:"start"`
-		Destination string `json:"destination"`
+		Start        string `json:"start"`
+		Destination  string `json:"destination"`
+		SinglePath   bool   `json:"single_path"`
 	}
 
 	// Create an instance of the struct
@@ -43,17 +43,21 @@ func UploadTextBFS(w http.ResponseWriter, r *http.Request) {
 	data.Start = strings.ReplaceAll(data.Start, " ", "_")
 	data.Destination = strings.ReplaceAll(data.Destination, " ", "_")
 
-	// You can now use data.Start and data.Destination in your application logic
-	// For example, log the received data (you could also implement any logic needed)
-	fmt.Printf("Received start: %s, destination: %s\n", data.Start, data.Destination)
+	 // Call BFS with the processed start and destination
+	 result := BFS(data.Start, data.Destination , data.SinglePath)
 
-	// Send a success response back to the client
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(map[string]string{
-		"messageType": "S",
-		"message":     "Data received successfully",
-	})
+	// Prepare the JSON response
+	response := map[string]interface{}{
+	//  "messageType": "S",
+	 "message":     "This is BFS !!!",
+	"paths": result.Paths,
+	"single_path": result.SinglePath,
+	}
+
+	 // Encode the result into JSON and send it back to the client
+	 if err := json.NewEncoder(w).Encode(response); err != nil {
+		 http.Error(w, err.Error(), http.StatusInternalServerError)
+	 }
 
 	// BFS(data.Start, data.Destination)
 }
@@ -61,8 +65,9 @@ func UploadTextBFS(w http.ResponseWriter, r *http.Request) {
 func UploadTextIDS(w http.ResponseWriter, r *http.Request) {
 	// Define a struct to match the expected input
 	type RequestData struct {
-		Start       string `json:"start"`
-		Destination string `json:"destination"`
+		Start        string `json:"start"`
+		Destination  string `json:"destination"`
+		SinglePath   bool   `json:"single_path"`
 	}
 
 	// Create an instance of the struct
@@ -81,13 +86,15 @@ func UploadTextIDS(w http.ResponseWriter, r *http.Request) {
 	data.Destination = strings.ReplaceAll(data.Destination, " ", "_")
 
 	 // Call IDS with the processed start and destination
-	 result := IDS(data.Start, data.Destination)
+	 result := IDS(data.Start, data.Destination , data.SinglePath)
 
 	 // Prepare the JSON response
 	 response := map[string]interface{}{
 		//  "messageType": "S",
-		//  "message":     "Data received successfully",
+		"message":     "This is IDS !!!!",
 		"paths": result.Paths,
+		"single_path": result.SinglePath,
+
 	 }
  
 	 // Set content type and write the status code
@@ -99,6 +106,3 @@ func UploadTextIDS(w http.ResponseWriter, r *http.Request) {
 		 http.Error(w, err.Error(), http.StatusInternalServerError)
 	 }
 }
-
-
-

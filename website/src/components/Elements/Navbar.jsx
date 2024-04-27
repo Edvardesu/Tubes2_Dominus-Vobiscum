@@ -7,7 +7,7 @@ const Navbar = () => {
       className="z-10 w-full flex items-center justify-between flex-wrap p-6 sticky top-0 border-b-2 border-yellow-700 bg-black"
     >
       <div className="flex items-center flex-shrink-0 text-white">
-        <span className="font-semibold text-3xl tracking-tight">LHOSSDOLL</span>
+        <span className="font-semibold text-3xl text-yellow-300 tracking-tight">DOMINVS VOBISCVM</span>
       </div>
       <div className="block lg:hidden">
         <button className="flex items-center px-3 py-2 border rounded text-teal-200 border-teal-400 hover:text-white hover:border-white">

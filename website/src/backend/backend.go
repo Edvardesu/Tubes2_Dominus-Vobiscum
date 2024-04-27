@@ -10,11 +10,6 @@ import (
 	"github.com/gorilla/handlers"
 )
 
-// func runGinMain(wg *sync.WaitGroup) {
-// 	defer wg.Done()
-// 	runGin()
-// }
-
 func runMuxMain(wg *sync.WaitGroup) {
 	defer wg.Done()
     r := mux.NewRouter()
@@ -34,15 +29,6 @@ func runMuxMain(wg *sync.WaitGroup) {
 
     log.Printf("Server is running on http://localhost:%s", PORT)
     log.Println(http.ListenAndServe(":"+PORT, handler))
-
-	// defer wg.Done()
-	// r := mux.NewRouter()
-
-	// r.HandleFunc("/ping", Ping).Methods("GET")
-	// r.HandleFunc("/upload", UploadText).Methods("POST")
-
-	// log.Printf("Server is running on http://localhost:%s", PORT)
-	// log.Println(http.ListenAndServe(":"+PORT, r))
 }
 
 func main() {
