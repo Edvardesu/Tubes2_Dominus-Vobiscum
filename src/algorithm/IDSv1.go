@@ -22,13 +22,13 @@ func main() {
 	fmt.Println("Starting WikiRace!\n")
 
 	// inisialisasi variable
-	single_path = true
+	single_path = false
 	var wg sync.WaitGroup // waitgroup untuk keep track konkurensi
 
 	// Create a new collector
 	c := colly.NewCollector(colly.AllowedDomains("en.wikipedia.org"), colly.CacheDir("./Cache"))
-	start = "Joko_Widodo"
-	destination = "Vladimir_Putin"
+	start = "Neuroscience"
+	destination = "Springtail"
 
 	// memanggil fungsi central
 	central(c, &wg)
