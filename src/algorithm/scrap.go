@@ -95,7 +95,7 @@ func scraping(c *colly.Collector, l *string, slice *[]string, new_path_of_url []
 		link := e.Attr("href")[6:]
 		if (!strings.Contains(link, ":")) && (!strings.Contains(link, "disambiguation")) && (!strings.Contains(link, "Main_Page")) {
 			// cek apakah link mengandung #
-			n := checkHastag(link)
+			n := strings.Index(link, "#")
 			if n != -1 {
 				link = cutLink(link, n)
 			}
