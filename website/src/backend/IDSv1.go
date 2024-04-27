@@ -6,7 +6,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/gin-gonic/gin"
+	// "github.com/gin-gonic/gin"
 	"github.com/gocolly/colly/v2"
 )
 
@@ -18,34 +18,34 @@ var total_link_visited int
 var single_path bool
 
 type Result struct {
-    Paths            [][]string
-    TotalLinks       int
-    PathLength       int
-    DurationInMS     int64
+    Paths            [][]string `json:"paths"`
+    TotalLinks       int        `json:"total_links"`
+    PathLength       int        `json:"path_length"`
+    DurationInMS     int64      `json:"duration_in_ms"`
 }
 
-func main() {
-    router := gin.Default()
+// func main() {
+//     router := gin.Default()
 
-    router.GET("/wikirace", func(c *gin.Context) {
-        startUrl := c.Query("start")
-        destinationUrl := c.Query("destination")
-        if startUrl == "" || destinationUrl == "" {
-            c.JSON(400, gin.H{"error": "start and destination parameters are required"})
-            return
-        }
+//     router.GET("/wikirace", func(c *gin.Context) {
+//         startUrl := c.Query("start")
+//         destinationUrl := c.Query("destination")
+//         if startUrl == "" || destinationUrl == "" {
+//             c.JSON(400, gin.H{"error": "start and destination parameters are required"})
+//             return
+//         }
 
-        result := IDS(startUrl, destinationUrl)
-        c.JSON(200, gin.H{
-            "paths":        result.Paths,
-            "total_links":  result.TotalLinks,
-            "path_length":  result.PathLength,
-            "runtime_ms":   result.DurationInMS,
-        })
-    })
+//         result := IDS(startUrl, destinationUrl)
+//         c.JSON(200, gin.H{
+//             "paths":        result.Paths,
+//             "total_links":  result.TotalLinks,
+//             "path_length":  result.PathLength,
+//             "runtime_ms":   result.DurationInMS,
+//         })
+//     })
 
-    router.Run(":8080")
-}
+//     router.Run(":8080")
+// }
 
 
 func IDS(startUrl, destinationUrl string) Result {

@@ -21,10 +21,6 @@ func Ping(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(answer)
 }
 
-func FetchIDSResults(w http.ResponseWriter, r *http.Request) {
-	
-}
-
 func UploadTextBFS(w http.ResponseWriter, r *http.Request) {
 	// Define a struct to match the expected input
 	type RequestData struct {
@@ -84,20 +80,24 @@ func UploadTextIDS(w http.ResponseWriter, r *http.Request) {
 	data.Start = strings.ReplaceAll(data.Start, " ", "_")
 	data.Destination = strings.ReplaceAll(data.Destination, " ", "_")
 
-	// You can now use data.Start and data.Destination in your application logic
-	// For example, log the received data (you could also implement any logic needed)
-	fmt.Printf("Received start: %s, destination: %s\n", data.Start, data.Destination)
+	 // Call IDS with the processed start and destination
+	 result := IDS(data.Start, data.Destination)
 
-	// Send a success response back to the client
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(map[string]string{
-		"messageType": "S",
-		"message":     "Data received successfully",
-		// "pathFound": 
-	})
-
-	IDS(data.Start, data.Destination)
+	 // Prepare the JSON response
+	 response := map[string]interface{}{
+		//  "messageType": "S",
+		//  "message":     "Data received successfully",
+		"paths": result.Paths,
+	 }
+ 
+	 // Set content type and write the status code
+	 w.Header().Set("Content-Type", "application/json")
+	 w.WriteHeader(http.StatusOK)
+ 
+	 // Encode the result into JSON and send it back to the client
+	 if err := json.NewEncoder(w).Encode(response); err != nil {
+		 http.Error(w, err.Error(), http.StatusInternalServerError)
+	 }
 }
 
 

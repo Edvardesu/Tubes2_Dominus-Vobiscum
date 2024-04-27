@@ -53,6 +53,8 @@ const CucakRowo = (props) => {
   const [inputEnd, setInputEnd] = useState("");
   const [start, setStart] = useState("");
   const [destination, setDestination] = useState("");
+  const [responseOutput, setResponseOutput] = useState(""); // State to store the backend response
+  const [singlePath, setSinglePath] = useState(false); // false as the default value
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -60,6 +62,7 @@ const CucakRowo = (props) => {
     const requestData = {
       start: start,
       destination: destination,
+      single_path: singlePath, // Add this line to include the toggle state in the request
     };
 
     const response = await fetch("http://localhost:8080/uploadids", {
@@ -71,59 +74,9 @@ const CucakRowo = (props) => {
     });
 
     const data = await response.json();
-    console.log(data); // You can do something with the response data, like updating state
+    setResponseOutput(JSON.stringify(data)); // Store the response data as a string in state
+    console.log(data);
   };
-
-  // const handleImageUpload = async () => {
-  //   if (selectedImage) {
-  //     const formData = new FormData();
-  //     formData.append("file", selectedImage);
-
-  //     try {
-  //       const response = await fetch("http://localhost:8080/upload", {
-  //         method: "POST",
-  //         body: formData,
-  //       });
-
-  //       if (response.ok) {
-  //         const result = await response.json();
-  //         alert(
-  //           result.messageType === "S"
-  //             ? "Image uploaded successfully!"
-  //             : `Error: ${result.message}`
-  //         );
-  //       } else {
-  //         alert("Error uploading image");
-  //       }
-  //     } catch (error) {
-  //       console.error("Error:", error);
-  //       alert("Error uploading image");
-  //     }
-  //   } else {
-  //     alert("Please select an image to upload");
-  //   }
-  // };
-
-  // const handleSearch = async (e) => {
-  //   e.preventDefault();
-  //   if (search === "") return;
-
-  //   const endpoint = `https://en.wikipedia.org/w/api.php?action=query&list=search&prop=info&inprop=url&utf8=&format=json&origin=*&srlimit=20&srsearch=${search}`;
-
-  //   const response = await fetch(endpoint);
-
-  //   // console.log(response);
-
-  //   if (!response.ok) {
-  //     throw Error(response.statusText);
-  //   }
-
-  //   const json = await response.json();
-  //   console.log(json);
-
-  //   setResults(json.query.search);
-  //   setSearchInfo(json.query.searchinfo);
-  // };
 
   return (
     <div className="py-20 w-full h-full flex flex-col justify-between">
@@ -154,7 +107,24 @@ const CucakRowo = (props) => {
           <p className="text-3xl font-bold mb-10 text-center text-yellow-400 relative">
             DOMINVS VOBISCVM
           </p>
-          <div className="flex flex-row mt-32 items-center justify-center gap-4 ">
+          <div className="mt-4 relative">
+            <label
+              htmlFor="single_path_toggle"
+              className="text-center text-xl block mb-2 font-medium text-white relative"
+            >
+              Single Path Only
+            </label>
+            <div className="text-center">
+              <input
+                id="single_path_toggle"
+                type="checkbox"
+                checked={singlePath}
+                onChange={() => setSinglePath(!singlePath)}
+                className="w-6 h-6 text-blue-600 bg-gray-100 rounded border-gray-300 focus:ring-blue-500 focus:ring-2"
+              />
+            </div>
+          </div>
+          <div className="flex flex-row mt-16 items-center justify-center gap-4 ">
             {/* GOES HERE */}
             <form onSubmit={handleSubmit}>
               <div className="">
@@ -199,6 +169,11 @@ const CucakRowo = (props) => {
               </div>
             </form>
           </div>
+          {responseOutput && (
+            <div className="response-output text-center mt-16 text-xl text-white relative">
+              {responseOutput}
+            </div>
+          )}
         </div>
       </div>
     </div>

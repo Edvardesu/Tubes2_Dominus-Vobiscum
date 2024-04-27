@@ -22,7 +22,7 @@ func runMuxMain(wg *sync.WaitGroup) {
     r.HandleFunc("/ping", Ping).Methods("GET")
     r.HandleFunc("/uploadbfs", UploadTextBFS).Methods("POST")
 	r.HandleFunc("/uploadids", UploadTextIDS).Methods("POST")
-	r.HandleFunc("/getids", FetchIDSResults).Methods("GET")
+	// r.HandleFunc("/getids", FetchIDSResults).Methods("GET")
 
     // Set up CORS
     headersOk := handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type", "Authorization"})
