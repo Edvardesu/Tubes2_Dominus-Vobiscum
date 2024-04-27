@@ -42,7 +42,7 @@ git clone https://github.com/Edvardesu/Tubes2_Dominus-Vobiscum.git
 ```
 cd website
 ```
-3. Jalankan website dengan command
+4. Jalankan website dengan command
 ```
 npm run dev
 ```
