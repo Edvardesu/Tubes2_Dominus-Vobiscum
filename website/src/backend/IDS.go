@@ -9,32 +9,41 @@ import (
 )
 
 func IDS(startUrl, destinationUrl string, single_pathTes bool) Result {
-	begin = time.Now()
-	single_path = single_pathTes
-	path_found = nil // Reset path_found for each run
-	total_link_visited = 0
+	if startUrl == destinationUrl {
+		return Result{
+			Paths:        path_found,
+			TotalLinks:   0,
+			PathLength:   0,
+			DurationInMS: 0,
+		}
+	} else {
+		begin = time.Now()
+		single_path = single_pathTes
+		path_found = nil // Reset path_found for each run
+		total_link_visited = 0
 
-	fmt.Println("Starting WikiRace!\n")
-	var wg sync.WaitGroup
+		fmt.Println("Starting WikiRace!\n")
+		var wg sync.WaitGroup
 
-	// Create a new collector
-	c := colly.NewCollector(colly.AllowedDomains("en.wikipedia.org"), colly.CacheDir("./Cache"))
-	start = startUrl
-	destination = destinationUrl
+		// Create a new collector
+		c := colly.NewCollector(colly.AllowedDomains("en.wikipedia.org"), colly.CacheDir("./Cache"))
+		start = startUrl
+		destination = destinationUrl
 
-	central(c, &wg)
+		central(c, &wg)
 
-	duration := time.Since(begin).Milliseconds()
-	pathLength := 0
-	if len(path_found) > 0 {
-		pathLength = len(path_found[0])
-	}
+		duration := time.Since(begin).Milliseconds()
+		pathLength := 0
+		if len(path_found) > 0 {
+			pathLength = len(path_found[0])
+		}
 
-	return Result{
-		Paths:        path_found,
-		TotalLinks:   total_link_visited,
-		PathLength:   pathLength,
-		DurationInMS: duration,
+		return Result{
+			Paths:        path_found,
+			TotalLinks:   total_link_visited,
+			PathLength:   pathLength,
+			DurationInMS: duration,
+		}
 	}
 }
 
